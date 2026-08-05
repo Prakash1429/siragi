@@ -62,7 +62,7 @@ export default function AdminLoginPage() {
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md rounded-3xl border border-border/40 glass p-8 shadow-2xl space-y-6"
+        className="w-full max-w-md rounded-3xl border border-border/40 glass p-6 sm:p-8 shadow-2xl space-y-6"
       >
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto text-primary">

@@ -44,7 +44,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 min-[450px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((card) => (
           <div key={card.name} className="p-4 rounded-xl border border-border/40 bg-secondary/15 flex items-center gap-3">
             <div className={`p-2 rounded-lg bg-secondary shrink-0 ${card.color}`}>

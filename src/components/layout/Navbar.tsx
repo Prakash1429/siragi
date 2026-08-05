@@ -9,7 +9,7 @@ import { authService } from '@/services/auth';
 import { dbService } from '@/services/db';
 import ThemeToggle from '../shared/ThemeToggle';
 import LanguageSwitcher from '../shared/LanguageSwitcher';
-import { Menu, Search, PenSquare, LogOut, User as UserIcon, LayoutDashboard, Feather, Bookmark, Heart, Settings, BookOpen } from 'lucide-react';
+import { Menu, Search, PenSquare, LogOut, User as UserIcon, LayoutDashboard, Feather, Bookmark, Heart, Settings, BookOpen, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { VisitorProfile } from '@/types';
 
@@ -147,9 +147,11 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
           {!pathname.startsWith('/admin') && (!user || user.role !== 'admin') && (
             <Link
               href="/admin/login"
-              className="h-10 px-5 rounded-full border border-border hover:bg-secondary text-sm font-bold text-foreground flex items-center justify-center transition-all"
+              className="h-10 px-3 sm:px-5 rounded-full border border-border hover:bg-secondary text-sm font-bold text-foreground flex items-center justify-center gap-1.5 transition-all shrink-0"
+              title="Admin Login"
             >
-              Admin Login
+              <LogIn className="w-4.5 h-4.5" />
+              <span className="hidden min-[450px]:inline">Admin Login</span>
             </Link>
           )}
 

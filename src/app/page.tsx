@@ -443,7 +443,7 @@ export default function HomePage() {
         <h3 className="text-xs font-black text-foreground uppercase tracking-widest text-muted-foreground text-center">
           Siragii Platform Activity Metrics
         </h3>
-        <div className="grid grid-cols-3 gap-6 text-center">
+        <div className="grid grid-cols-1 min-[450px]:grid-cols-3 gap-4 min-[450px]:gap-6 text-center">
           <div className="p-4 rounded-2xl bg-secondary/20">
             <strong className="block text-xl md:text-2xl font-black text-foreground">
               <CountUp end={poems.length} />
