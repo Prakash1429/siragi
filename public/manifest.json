@@ -1,0 +1,22 @@
+{
+  "name": "Kavithaiverse Poetry",
+  "short_name": "Kavithaiverse",
+  "description": "Premium Bilingual Poetry Portal for Tamil and English verses",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d111e",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/shapes/svg?seed=kavithaiverse",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/shapes/svg?seed=kavithaiverse",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

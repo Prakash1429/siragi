@@ -1,0 +1,65 @@
+{
+  "appName": "Siragii",
+  "tagline": "The Universe of Tamil & English Poetry",
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "trending": "Trending",
+    "audio": "Audio",
+    "poems": "Poems",
+    "stories": "Stories",
+    "write": "Write Poem",
+    "profile": "Profile",
+    "admin": "Admin Dashboard",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "community": "Community",
+    "about": "About Us",
+    "contact": "Contact",
+    "favorites": "Favorites",
+    "collections": "Collections"
+  },
+  "hero": {
+    "title": "Unleash the Power of Your Words",
+    "subtitle": "Publish, read, and listen to soul-stirring poetry in Tamil and English. Join our community of poets.",
+    "cta_write": "Start Writing",
+    "cta_explore": "Explore Poems"
+  },
+  "poem": {
+    "likes": "Likes",
+    "comments": "Comments",
+    "views": "Views",
+    "audio": "Listen to Recitation",
+    "write_comment": "Write a comment...",
+    "post_comment": "Post Comment",
+    "read_more": "Read Full Poem",
+    "language": "Language",
+    "category": "Category",
+    "tags": "Tags",
+    "no_poems": "No poems found."
+  },
+  "write": {
+    "title": "Compose a New Masterpiece",
+    "label_title": "Poem Title",
+    "label_content": "Poetry Verses",
+    "label_category": "Select Category",
+    "label_language": "Language",
+    "label_tags": "Tags (comma separated)",
+    "label_audio": "Audio Recitation (Optional mp3 link)",
+    "btn_publish": "Publish Poem",
+    "btn_saving": "Publishing...",
+    "success": "Poem published successfully!"
+  },
+  "profile": {
+    "followers": "followers",
+    "following": "following",
+    "my_poems": "My Poems",
+    "my_favorites": "My Favorites",
+    "my_collections": "My Collections",
+    "edit_profile": "Edit Profile",
+    "update_profile": "Update Profile",
+    "bio": "Bio",
+    "display_name": "Display Name"
+  }
+}
