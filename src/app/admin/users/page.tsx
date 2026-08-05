@@ -78,6 +78,7 @@ export default function AdminUsersPage() {
           <table className="w-full text-left border-collapse text-xs min-w-[800px]">
             <thead>
               <tr className="bg-secondary/40 text-muted-foreground font-bold border-b border-border/40">
+                <th className="p-3 w-16 text-center">S.No</th>
                 <th className="p-3">Username</th>
                 <th className="p-3">User ID</th>
                 <th className="p-3">Joined Date & Time</th>
@@ -92,10 +93,13 @@ export default function AdminUsersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/30">
-              {visitorProfiles.map((profile) => {
+              {visitorProfiles.map((profile, index) => {
                 const online = isOnline(profile.lastActive);
                 return (
                   <tr key={profile.id} className="hover:bg-secondary/20">
+                    <td className="p-3 text-center text-muted-foreground font-mono">
+                      {index + 1}
+                    </td>
                     <td className="p-3 font-semibold text-foreground">
                       {profile.username}
                     </td>
