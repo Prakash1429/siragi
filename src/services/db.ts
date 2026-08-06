@@ -447,6 +447,26 @@ export const dbService = {
       }
     }
     
+    if (newPoem.status === 'published') {
+      try {
+        dbService.getUsers().then(users => {
+          const promises = users
+            .filter(u => u.id !== newPoem.authorId)
+            .map(u => dbService.addNotification({
+              recipientId: u.id,
+              senderId: 'admin',
+              senderName: 'Admin',
+              type: 'system',
+              message: `A new poem has been published: "${newPoem.title}"`,
+              read: false,
+              poemId: newPoem.id,
+              poemTitle: newPoem.title
+            }));
+          return Promise.all(promises);
+        }).catch(console.error);
+      } catch {}
+    }
+    
     return newPoem;
   },
 
@@ -662,6 +682,26 @@ export const dbService = {
       }
     }
     
+    if (newStory.status === 'published') {
+      try {
+        dbService.getUsers().then(users => {
+          const promises = users
+            .filter(u => u.id !== newStory.authorId)
+            .map(u => dbService.addNotification({
+              recipientId: u.id,
+              senderId: 'admin',
+              senderName: 'Admin',
+              type: 'system',
+              message: `A new story has been published: "${newStory.title}"`,
+              read: false,
+              poemId: newStory.id,
+              poemTitle: newStory.title
+            }));
+          return Promise.all(promises);
+        }).catch(console.error);
+      } catch {}
+    }
+    
     return newStory;
   },
 
@@ -763,6 +803,26 @@ export const dbService = {
         console.error('Error saving quote to Firestore:', err);
         throw err;
       }
+    }
+    
+    if (newQuote.status === 'published') {
+      try {
+        dbService.getUsers().then(users => {
+          const promises = users
+            .filter(u => u.id !== newQuote.authorId)
+            .map(u => dbService.addNotification({
+              recipientId: u.id,
+              senderId: 'admin',
+              senderName: 'Admin',
+              type: 'system',
+              message: `A new ${newQuote.category} has been published: "${newQuote.content.slice(0, 30)}${newQuote.content.length > 30 ? '...' : ''}"`,
+              read: false,
+              poemId: newQuote.id,
+              poemTitle: newQuote.content.slice(0, 20)
+            }));
+          return Promise.all(promises);
+        }).catch(console.error);
+      } catch {}
     }
     
     return newQuote;
@@ -912,6 +972,19 @@ export const dbService = {
             await updateDoc(doc(db, 'poems', comment.contentId), { commentsCount: list[idx].commentsCount });
           } catch {}
         }
+        const targetPoem = list[idx];
+        if (targetPoem && targetPoem.authorId && targetPoem.authorId !== comment.userId) {
+          dbService.addNotification({
+            recipientId: targetPoem.authorId,
+            senderId: comment.userId,
+            senderName: comment.userName,
+            type: 'comment',
+            message: `Someone commented on your poem: "${comment.content.slice(0, 30)}${comment.content.length > 30 ? '...' : ''}"`,
+            read: false,
+            poemId: comment.contentId,
+            poemTitle: targetPoem.title
+          }).catch(console.error);
+        }
       }
     } else if (comment.contentType === 'story') {
       const list = getStories();
@@ -924,6 +997,19 @@ export const dbService = {
             await updateDoc(doc(db, 'stories', comment.contentId), { commentsCount: list[idx].commentsCount });
           } catch {}
         }
+        const targetStory = list[idx];
+        if (targetStory && targetStory.authorId && targetStory.authorId !== comment.userId) {
+          dbService.addNotification({
+            recipientId: targetStory.authorId,
+            senderId: comment.userId,
+            senderName: comment.userName,
+            type: 'comment',
+            message: `Someone commented on your story: "${comment.content.slice(0, 30)}${comment.content.length > 30 ? '...' : ''}"`,
+            read: false,
+            poemId: comment.contentId,
+            poemTitle: targetStory.title
+          }).catch(console.error);
+        }
       }
     } else if (comment.contentType === 'quote') {
       const list = getQuotes();
@@ -935,6 +1021,19 @@ export const dbService = {
           try {
             await updateDoc(doc(db, 'quotes', comment.contentId), { commentsCount: list[idx].commentsCount });
           } catch {}
+        }
+        const targetQuote = list[idx];
+        if (targetQuote && targetQuote.authorId && targetQuote.authorId !== comment.userId) {
+          dbService.addNotification({
+            recipientId: targetQuote.authorId,
+            senderId: comment.userId,
+            senderName: comment.userName,
+            type: 'comment',
+            message: `Someone commented on your ${targetQuote.category}: "${comment.content.slice(0, 30)}${comment.content.length > 30 ? '...' : ''}"`,
+            read: false,
+            poemId: comment.contentId,
+            poemTitle: targetQuote.content.slice(0, 20)
+          }).catch(console.error);
         }
       }
     }
@@ -1849,6 +1948,49 @@ export const dbService = {
         n.read = true;
       }
     });
+    setNotifications(list);
+  },
+
+  markSingleNotificationRead: async (notificationId: string, read: boolean): Promise<void> => {
+    if (isFirebaseConfigured && db) {
+      try {
+        await updateDoc(doc(db!, 'notifications', notificationId), { read });
+      } catch (err) {
+        console.error('Error updating single notification read status:', err);
+      }
+    }
+    const list = getNotifications();
+    const idx = list.findIndex(n => n.id === notificationId);
+    if (idx !== -1) {
+      list[idx].read = read;
+      setNotifications(list);
+    }
+  },
+
+  deleteNotification: async (notificationId: string): Promise<void> => {
+    if (isFirebaseConfigured && db) {
+      try {
+        await deleteDoc(doc(db!, 'notifications', notificationId));
+      } catch (err) {
+        console.error('Error deleting notification from Firestore:', err);
+      }
+    }
+    const list = getNotifications().filter(n => n.id !== notificationId);
+    setNotifications(list);
+  },
+
+  clearAllNotifications: async (recipientId: string): Promise<void> => {
+    if (isFirebaseConfigured && db) {
+      try {
+        const q = query(collection(db!, 'notifications'), where('recipientId', '==', recipientId));
+        const snap = await getDocs(q);
+        const batchPromise = snap.docs.map(d => deleteDoc(doc(db!, 'notifications', d.id)));
+        await Promise.all(batchPromise);
+      } catch (err) {
+        console.error('Error clearing notifications from Firestore:', err);
+      }
+    }
+    const list = getNotifications().filter(n => n.recipientId !== recipientId);
     setNotifications(list);
   }
 };

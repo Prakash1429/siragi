@@ -9,6 +9,7 @@ import { authService } from '@/services/auth';
 import { dbService } from '@/services/db';
 import ThemeToggle from '../shared/ThemeToggle';
 import LanguageSwitcher from '../shared/LanguageSwitcher';
+import NotificationCenter from '../shared/NotificationCenter';
 import { Menu, Search, PenSquare, LogOut, User as UserIcon, LayoutDashboard, Feather, Bookmark, Heart, Settings, BookOpen, LogIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { VisitorProfile } from '@/types';
@@ -133,6 +134,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
           <ThemeToggle />
+          <NotificationCenter />
 
           {user && user.role === 'admin' && !pathname.startsWith('/admin') && (
             <Link

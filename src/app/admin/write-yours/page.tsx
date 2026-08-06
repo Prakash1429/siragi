@@ -107,6 +107,8 @@ export default function AdminWriteYoursPage() {
           title: selectedSub.title,
           content: selectedSub.content,
           author: selectedSub.userName,
+          authorId: selectedSub.userId,
+          authorUsername: selectedSub.userUsername,
           status: 'published',
           coverUrl: selectedSub.coverUrl || undefined,
           tags: ['Community'],
@@ -120,6 +122,8 @@ export default function AdminWriteYoursPage() {
         await dbService.saveQuote({
           content: selectedSub.content,
           author: selectedSub.userName,
+          authorId: selectedSub.userId,
+          authorUsername: selectedSub.userUsername,
           category: selectedSub.contentType === 'thought' ? 'thought' : 'quote',
           genre: catName,
           tags: ['Community'],
@@ -127,6 +131,18 @@ export default function AdminWriteYoursPage() {
           createdAt: new Date().toISOString()
         });
       }
+
+      // 1. Notify the author of approval
+      await dbService.addNotification({
+        recipientId: selectedSub.userId,
+        senderId: 'admin',
+        senderName: 'Admin',
+        type: 'system',
+        message: `Your ${selectedSub.contentType} has been approved and published.`,
+        read: false,
+        poemId: selectedSub.contentType === 'thought' ? 'quotes' : `${selectedSub.contentType}s`,
+        poemTitle: selectedSub.title
+      });
 
       toast.success('Submission approved and published successfully!');
       
@@ -151,6 +167,18 @@ export default function AdminWriteYoursPage() {
         status: 'rejected',
         rejectionReason: rejectionReason.trim() || undefined,
         improvementSuggestions: improvementSuggestions.trim() || undefined
+      });
+
+      // Notify the user of rejection status
+      await dbService.addNotification({
+        recipientId: selectedSub.userId,
+        senderId: 'admin',
+        senderName: 'Admin',
+        type: 'system',
+        message: `Your submission has been rejected.${rejectionReason.trim() ? ` Reason: ${rejectionReason.trim()}` : ''}`,
+        read: false,
+        poemId: 'write-yours',
+        poemTitle: selectedSub.title
       });
 
       toast.success('Submission rejected.');

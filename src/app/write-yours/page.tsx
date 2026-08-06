@@ -66,6 +66,18 @@ export default function UserWriteYoursPage() {
         coverUrl: coverUrl.trim() || undefined,
       });
 
+      // Add notification for submission received
+      await dbService.addNotification({
+        recipientId: user.id,
+        senderId: 'system',
+        senderName: 'System',
+        type: 'system',
+        message: 'Your submission has been received for verification.',
+        read: false,
+        poemId: 'write-yours',
+        poemTitle: title.trim()
+      });
+
       toast.success('Your submission has been sent for verification and will be published after admin approval.');
       
       // Reset form

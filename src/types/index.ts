@@ -64,6 +64,8 @@ export interface Story {
   subtitle?: string;
   coverUrl?: string;
   author: string;
+  authorId?: string;
+  authorUsername?: string;
   category: 'story';
   genre?: string;
   content: string;
@@ -261,6 +263,8 @@ export interface Quote {
   id: string;
   content: string;
   author: string;
+  authorId?: string;
+  authorUsername?: string;
   category: 'thought' | 'quote';
   genre?: string;
   tags?: string[];
