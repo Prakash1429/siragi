@@ -349,7 +349,10 @@ export default function QuoteDetailPage({ params }: PageProps) {
                 key={comment.id}
                 comment={comment}
                 onDelete={handleDeleteComment}
-                onDeleteReply={handleDeleteCommentReply}
+                onRefresh={async () => {
+                  const list = await dbService.getComments(id);
+                  setComments(list);
+                }}
               />
             ))
           ) : (

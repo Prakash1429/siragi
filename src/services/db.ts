@@ -1,4 +1,4 @@
-import { Poem, Category, Comment, Collection, AudioTrack, User, Report, ActivityLog, Achievement, Story, Like, VisitorLog, VisitorProfile, ReadingHistoryItem, Quote, Submission, UserQuery, Notification } from '@/types';
+import { Poem, Category, Comment, CommentReply, Collection, AudioTrack, User, Report, ActivityLog, Achievement, Story, Like, VisitorLog, VisitorProfile, ReadingHistoryItem, Quote, Submission, UserQuery, Notification } from '@/types';
 import { mockCategories, mockQuotes, mockAchievements } from '@/lib/firebase/mockData';
 import { db, isFirebaseConfigured } from '@/lib/firebase/firebase';
 import { 
@@ -2001,5 +2001,76 @@ export const dbService = {
     }
     const list = getNotifications().filter(n => n.recipientId !== recipientId);
     setNotifications(list);
+  },
+
+  addCommentReply: async (commentId: string, reply: Omit<CommentReply, 'id' | 'createdAt'>): Promise<CommentReply> => {
+    const list = getComments();
+    const commentIdx = list.findIndex(c => c.id === commentId);
+    if (commentIdx === -1) throw new Error('Comment not found');
+    
+    const targetComment = list[commentIdx];
+    const newReply: CommentReply = {
+      ...reply,
+      id: `reply-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    
+    const updatedReplies = [...(targetComment.replies || []), newReply];
+    targetComment.replies = updatedReplies;
+    list[commentIdx] = targetComment;
+    setComments(list);
+    
+    if (isFirebaseConfigured && db) {
+      await updateDoc(doc(db!, 'comments', commentId), { replies: updatedReplies });
+    }
+    
+    if (targetComment.userId !== reply.userId) {
+      await dbService.addNotification({
+        recipientId: targetComment.userId,
+        senderId: reply.userId,
+        senderName: reply.userName,
+        type: 'comment',
+        message: reply.userUsername === 'admin' 
+          ? `The admin replied to your comment.`
+          : `${reply.userName} replied to your comment: "${reply.content.slice(0, 30)}${reply.content.length > 30 ? '...' : ''}"`,
+        read: false,
+        poemId: targetComment.contentId,
+        poemTitle: targetComment.contentTitle
+      });
+    }
+    
+    return newReply;
+  },
+  
+  updateCommentReply: async (commentId: string, replyId: string, content: string): Promise<void> => {
+    const list = getComments();
+    const commentIdx = list.findIndex(c => c.id === commentId);
+    if (commentIdx === -1) throw new Error('Comment not found');
+    
+    const targetComment = list[commentIdx];
+    const updatedReplies = (targetComment.replies || []).map(r => r.id === replyId ? { ...r, content: content.trim() } : r);
+    targetComment.replies = updatedReplies;
+    list[commentIdx] = targetComment;
+    setComments(list);
+    
+    if (isFirebaseConfigured && db) {
+      await updateDoc(doc(db!, 'comments', commentId), { replies: updatedReplies });
+    }
+  },
+  
+  deleteCommentReply: async (commentId: string, replyId: string): Promise<void> => {
+    const list = getComments();
+    const commentIdx = list.findIndex(c => c.id === commentId);
+    if (commentIdx === -1) throw new Error('Comment not found');
+    
+    const targetComment = list[commentIdx];
+    const updatedReplies = (targetComment.replies || []).filter(r => r.id !== replyId);
+    targetComment.replies = updatedReplies;
+    list[commentIdx] = targetComment;
+    setComments(list);
+    
+    if (isFirebaseConfigured && db) {
+      await updateDoc(doc(db!, 'comments', commentId), { replies: updatedReplies });
+    }
   }
 };
