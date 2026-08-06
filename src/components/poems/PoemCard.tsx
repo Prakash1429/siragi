@@ -187,18 +187,7 @@ export default function PoemCard({ poem }: PoemCardProps) {
             <span>{poem.commentsCount}</span>
           </span>
 
-          {/* Saves */}
-          <button
-            onClick={handleFavorite}
-            className={cn(
-              "flex items-center gap-1 text-xs font-bold transition-all hover:scale-105",
-              isFavorited ? "text-rose-500" : "text-muted-foreground hover:text-rose-500"
-            )}
-            title="Saves"
-          >
-            <Heart className={cn("w-4 h-4", isFavorited && "fill-rose-500")} />
-            <span>{favorites}</span>
-          </button>
+
 
           {/* Shares */}
           <button
