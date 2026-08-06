@@ -35,11 +35,11 @@ export default function PublicPoemsPage() {
   }, []);
 
   const filtered = poems.filter(p => {
-    const matchesLanguage = activeLanguage === 'all' || p.language === activeLanguage;
+    const matchesLanguage = activeLanguage === 'all' || p.language?.toLowerCase() === activeLanguage;
     const matchesCategory = selectedCategory === 'all' || p.categorySlug === selectedCategory;
-    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          p.authorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch = (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (p.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (p.authorName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.tags && p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
     return matchesLanguage && matchesCategory && matchesSearch;
   });
@@ -136,7 +136,7 @@ export default function PublicPoemsPage() {
       ) : (
         <div className="text-center py-20 border border-dashed border-border/40 rounded-3xl p-6">
           <Feather className="w-12 h-12 text-muted-foreground/35 mx-auto mb-3" />
-          <p className="text-xs text-muted-foreground">No poems uploaded in this language category.</p>
+          <p className="text-xs text-muted-foreground">No poems found for the selected filters.</p>
         </div>
       )}
     </div>
