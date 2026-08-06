@@ -35,7 +35,10 @@ export default function PublicPoemsPage() {
   }, []);
 
   const filtered = poems.filter(p => {
-    const matchesLanguage = activeLanguage === 'all' || p.language?.toLowerCase() === activeLanguage;
+    const isTamil = /[\u0B80-\u0BFF]/.test(p.title || '') || /[\u0B80-\u0BFF]/.test(p.content || '');
+    const matchesLanguage = activeLanguage === 'all' ||
+      (activeLanguage === 'ta' && (isTamil || p.language?.toLowerCase() === 'ta' || p.language?.toLowerCase() === 'tamil')) ||
+      (activeLanguage === 'en' && !isTamil && (p.language?.toLowerCase() === 'en' || p.language?.toLowerCase() === 'english' || !p.language));
     const matchesCategory = selectedCategory === 'all' || p.categorySlug === selectedCategory;
     const matchesSearch = (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||

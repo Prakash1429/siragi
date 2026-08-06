@@ -93,7 +93,7 @@ export default function AdminWriteYoursPage() {
           authorId: selectedSub.userId,
           authorName: selectedSub.userName,
           authorUsername: selectedSub.userUsername,
-          language: 'en',
+          language: /[\u0B80-\u0BFF]/.test(selectedSub.title || '') || /[\u0B80-\u0BFF]/.test(selectedSub.content || '') ? 'ta' : 'en',
           slug,
           categorySlug,
           categoryName: catName,
