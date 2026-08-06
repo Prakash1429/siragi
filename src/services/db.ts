@@ -449,19 +449,22 @@ export const dbService = {
     
     if (newPoem.status === 'published') {
       try {
-        dbService.getUsers().then(users => {
-          const promises = users
-            .filter(u => u.id !== newPoem.authorId)
-            .map(u => dbService.addNotification({
-              recipientId: u.id,
-              senderId: 'admin',
-              senderName: 'Admin',
-              type: 'system',
-              message: `A new poem has been published: "${newPoem.title}"`,
-              read: false,
-              poemId: newPoem.id,
-              poemTitle: newPoem.title
-            }));
+        Promise.all([dbService.getVisitorProfiles(), dbService.getUsers()]).then(([visitors, users]) => {
+          const uniqueIds = Array.from(new Set([
+            ...visitors.map(v => v.id),
+            ...users.map(u => u.id)
+          ])).filter(id => id !== newPoem.authorId);
+
+          const promises = uniqueIds.map(id => dbService.addNotification({
+            recipientId: id,
+            senderId: 'admin',
+            senderName: 'Admin',
+            type: 'system',
+            message: `A new poem has been published: "${newPoem.title}"`,
+            read: false,
+            poemId: newPoem.id,
+            poemTitle: newPoem.title
+          }));
           return Promise.all(promises);
         }).catch(console.error);
       } catch {}
@@ -684,19 +687,22 @@ export const dbService = {
     
     if (newStory.status === 'published') {
       try {
-        dbService.getUsers().then(users => {
-          const promises = users
-            .filter(u => u.id !== newStory.authorId)
-            .map(u => dbService.addNotification({
-              recipientId: u.id,
-              senderId: 'admin',
-              senderName: 'Admin',
-              type: 'system',
-              message: `A new story has been published: "${newStory.title}"`,
-              read: false,
-              poemId: newStory.id,
-              poemTitle: newStory.title
-            }));
+        Promise.all([dbService.getVisitorProfiles(), dbService.getUsers()]).then(([visitors, users]) => {
+          const uniqueIds = Array.from(new Set([
+            ...visitors.map(v => v.id),
+            ...users.map(u => u.id)
+          ])).filter(id => id !== newStory.authorId);
+
+          const promises = uniqueIds.map(id => dbService.addNotification({
+            recipientId: id,
+            senderId: 'admin',
+            senderName: 'Admin',
+            type: 'system',
+            message: `A new story has been published: "${newStory.title}"`,
+            read: false,
+            poemId: newStory.id,
+            poemTitle: newStory.title
+          }));
           return Promise.all(promises);
         }).catch(console.error);
       } catch {}
@@ -807,19 +813,22 @@ export const dbService = {
     
     if (newQuote.status === 'published') {
       try {
-        dbService.getUsers().then(users => {
-          const promises = users
-            .filter(u => u.id !== newQuote.authorId)
-            .map(u => dbService.addNotification({
-              recipientId: u.id,
-              senderId: 'admin',
-              senderName: 'Admin',
-              type: 'system',
-              message: `A new ${newQuote.category} has been published: "${newQuote.content.slice(0, 30)}${newQuote.content.length > 30 ? '...' : ''}"`,
-              read: false,
-              poemId: newQuote.id,
-              poemTitle: newQuote.content.slice(0, 20)
-            }));
+        Promise.all([dbService.getVisitorProfiles(), dbService.getUsers()]).then(([visitors, users]) => {
+          const uniqueIds = Array.from(new Set([
+            ...visitors.map(v => v.id),
+            ...users.map(u => u.id)
+          ])).filter(id => id !== newQuote.authorId);
+
+          const promises = uniqueIds.map(id => dbService.addNotification({
+            recipientId: id,
+            senderId: 'admin',
+            senderName: 'Admin',
+            type: 'system',
+            message: `A new ${newQuote.category} has been published: "${newQuote.content.slice(0, 30)}${newQuote.content.length > 30 ? '...' : ''}"`,
+            read: false,
+            poemId: newQuote.id,
+            poemTitle: newQuote.content.slice(0, 20)
+          }));
           return Promise.all(promises);
         }).catch(console.error);
       } catch {}
