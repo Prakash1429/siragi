@@ -27,6 +27,10 @@ export default function ThemeToggle() {
     
     // 1. Instantly apply the theme class to HTML node to bypass state cycles
     const docEl = document.documentElement;
+    
+    // Disable all CSS transitions temporarily to make the theme swap instant
+    docEl.classList.add('disable-transitions');
+    
     if (newTheme === 'dark') {
       docEl.classList.add('dark');
       docEl.classList.remove('light');
@@ -43,6 +47,13 @@ export default function ThemeToggle() {
     
     // 4. Update next-themes background client state
     setTheme(newTheme);
+
+    // 5. Re-enable transitions after the browser has completed the repaint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        docEl.classList.remove('disable-transitions');
+      });
+    });
   };
 
   return (
