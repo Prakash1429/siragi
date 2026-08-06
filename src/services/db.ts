@@ -1,4 +1,4 @@
-import { Poem, Category, Comment, Collection, AudioTrack, User, Report, ActivityLog, Achievement, Story, Like, VisitorLog, VisitorProfile, ReadingHistoryItem, Quote, Submission, UserQuery } from '@/types';
+import { Poem, Category, Comment, Collection, AudioTrack, User, Report, ActivityLog, Achievement, Story, Like, VisitorLog, VisitorProfile, ReadingHistoryItem, Quote, Submission, UserQuery, Notification } from '@/types';
 import { mockCategories, mockQuotes, mockAchievements } from '@/lib/firebase/mockData';
 import { db, isFirebaseConfigured } from '@/lib/firebase/firebase';
 import { 
@@ -70,6 +70,15 @@ const getComments = (): Comment[] => {
 };
 const setComments = (list: Comment[]) => {
   if (isClient) localStorage.setItem('siragii_comments', JSON.stringify(list));
+};
+
+const getNotifications = (): Notification[] => {
+  if (!isClient) return [];
+  const stored = localStorage.getItem('siragii_notifications');
+  return stored ? JSON.parse(stored) : [];
+};
+const setNotifications = (list: Notification[]) => {
+  if (isClient) localStorage.setItem('siragii_notifications', JSON.stringify(list));
 };
 
 const getLikes = (): string[] => {
@@ -1782,5 +1791,64 @@ export const dbService = {
       }
       throw new Error('Query not found');
     }
+  },
+
+  // --- NOTIFICATIONS ---
+  addNotification: async (notification: Omit<Notification, 'id' | 'createdAt'>): Promise<Notification> => {
+    const newNotif: Notification = {
+      ...notification,
+      id: `notif-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    if (isFirebaseConfigured && db) {
+      try {
+        await setDoc(doc(db!, 'notifications', newNotif.id), cleanUndefined(newNotif));
+      } catch (err) {
+        console.error('Error saving notification to Firestore:', err);
+      }
+    }
+    const list = getNotifications();
+    list.push(newNotif);
+    setNotifications(list);
+    return newNotif;
+  },
+
+  getNotifications: async (recipientId: string): Promise<Notification[]> => {
+    let list = getNotifications();
+    if (isFirebaseConfigured && db) {
+      try {
+        const q = query(
+          collection(db!, 'notifications'), 
+          where('recipientId', '==', recipientId)
+        );
+        const snap = await getDocs(q);
+        list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Notification));
+      } catch (err) {
+        console.error('Error fetching notifications from Firestore:', err);
+      }
+    }
+    return list
+      .filter(n => n.recipientId === recipientId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  },
+
+  markNotificationsAsRead: async (recipientId: string): Promise<void> => {
+    if (isFirebaseConfigured && db) {
+      try {
+        const q = query(collection(db!, 'notifications'), where('recipientId', '==', recipientId), where('read', '==', false));
+        const snap = await getDocs(q);
+        const batchPromise = snap.docs.map(d => updateDoc(doc(db!, 'notifications', d.id), { read: true }));
+        await Promise.all(batchPromise);
+      } catch (err) {
+        console.error('Error marking notifications read in Firestore:', err);
+      }
+    }
+    const list = getNotifications();
+    list.forEach(n => {
+      if (n.recipientId === recipientId) {
+        n.read = true;
+      }
+    });
+    setNotifications(list);
   }
 };

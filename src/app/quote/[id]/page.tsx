@@ -184,6 +184,19 @@ export default function QuoteDetailPage({ params }: PageProps) {
     }
   };
 
+  const handleDeleteCommentReply = async (commentId: string, replyId: string) => {
+    try {
+      const comment = comments.find(c => c.id === commentId);
+      if (!comment) return;
+      const updatedReplies = (comment.replies || []).filter(r => r.id !== replyId);
+      await dbService.updateCommentStatus(commentId, { replies: updatedReplies });
+      setComments(prev => prev.map(c => c.id === commentId ? { ...c, replies: updatedReplies } : c));
+      toast.success('Reply deleted.');
+    } catch {
+      toast.error('Failed to delete reply.');
+    }
+  };
+
   if (loading) {
     return <LoadingSkeleton type="profile" />;
   }
@@ -336,6 +349,7 @@ export default function QuoteDetailPage({ params }: PageProps) {
                 key={comment.id}
                 comment={comment}
                 onDelete={handleDeleteComment}
+                onDeleteReply={handleDeleteCommentReply}
               />
             ))
           ) : (

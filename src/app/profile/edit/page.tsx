@@ -15,6 +15,7 @@ export default function ProfileEditPage() {
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [enableNotifications, setEnableNotifications] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function ProfileEditPage() {
     setName(user.name);
     setBio(user.bio || '');
     setAvatarUrl(user.avatarUrl || '');
+    setEnableNotifications(user.enableNotifications !== false);
   }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +36,7 @@ export default function ProfileEditPage() {
 
     setSaving(true);
     try {
-      const updatedData = { name, bio, avatarUrl };
+      const updatedData = { name, bio, avatarUrl, enableNotifications };
       await dbService.updateUser(user.id, updatedData);
       
       const newProfile = { ...user, ...updatedData };
@@ -118,6 +120,30 @@ export default function ProfileEditPage() {
             onChange={(e) => setAvatarUrl(e.target.value)}
             placeholder="https://images.unsplash.com/..."
             className="w-full h-12 px-4 rounded-xl bg-secondary/30 border border-border/50 text-sm focus:outline-none focus:border-primary/80 focus:ring-1 focus:ring-primary/45 transition-all text-foreground"
+          />
+        </div>
+
+        {/* Enable Notifications */}
+        <div className="flex items-center justify-between p-4 rounded-xl border border-border/40 bg-secondary/15">
+          <div className="space-y-0.5 text-left">
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground block">
+              Enable Admin Reply Notifications
+            </span>
+            <span className="text-[10px] text-muted-foreground block">
+              Show desktop notifications and alerts when an admin replies to your comments.
+            </span>
+          </div>
+          <input
+            type="checkbox"
+            checked={enableNotifications}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setEnableNotifications(checked);
+              if (checked && typeof window !== 'undefined' && 'Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission();
+              }
+            }}
+            className="w-4 h-4 rounded text-primary focus:ring-primary/45 border-border bg-secondary cursor-pointer shrink-0"
           />
         </div>
 

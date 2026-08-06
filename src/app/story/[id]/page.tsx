@@ -162,6 +162,30 @@ export default function StoryDetailPage({ params }: StoryPageProps) {
     }
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    if (!story) return;
+    try {
+      await dbService.deleteComment(commentId, story.id, 'story');
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+      toast.success('Comment deleted.');
+    } catch {
+      toast.error('Failed to delete comment.');
+    }
+  };
+
+  const handleDeleteCommentReply = async (commentId: string, replyId: string) => {
+    try {
+      const comment = comments.find(c => c.id === commentId);
+      if (!comment) return;
+      const updatedReplies = (comment.replies || []).filter(r => r.id !== replyId);
+      await dbService.updateCommentStatus(commentId, { replies: updatedReplies });
+      setComments(prev => prev.map(c => c.id === commentId ? { ...c, replies: updatedReplies } : c));
+      toast.success('Reply deleted.');
+    } catch {
+      toast.error('Failed to delete reply.');
+    }
+  };
+
   if (loading) return <LoadingSkeleton type="profile" />;
   if (!story) return <div className="text-center py-20 font-bold">Story not found.</div>;
 
@@ -311,7 +335,12 @@ export default function StoryDetailPage({ params }: StoryPageProps) {
 
         <div className="space-y-4">
           {comments.map((comment) => (
-            <CommentCard key={comment.id} comment={comment} onDelete={() => {}} />
+            <CommentCard
+              key={comment.id}
+              comment={comment}
+              onDelete={handleDeleteComment}
+              onDeleteReply={handleDeleteCommentReply}
+            />
           ))}
         </div>
       </section>

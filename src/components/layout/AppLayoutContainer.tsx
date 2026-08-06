@@ -149,6 +149,49 @@ export default function AppLayoutContainer({ children }: { children: React.React
     }
   }, [showSplash, showUsernamePrompt, checkingAuth]);
 
+  // Poll for admin reply notifications
+  useEffect(() => {
+    if (!user) return;
+
+    const checkNotifications = async () => {
+      try {
+        const notifs = await dbService.getNotifications(user.id);
+        const unread = notifs.filter(n => !n.read);
+        
+        if (unread.length > 0) {
+          unread.forEach(n => {
+            toast.info(n.message, {
+              duration: 8000,
+              action: {
+                label: 'View',
+                onClick: () => {
+                  if (n.poemId) {
+                    router.push(`/poem/${n.poemId}`);
+                  }
+                }
+              }
+            });
+
+            if (user.enableNotifications !== false && typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+              new Notification('Siragii Reply Alert', {
+                body: n.message,
+                icon: '/icon.png'
+              });
+            }
+          });
+
+          await dbService.markNotificationsAsRead(user.id);
+        }
+      } catch (err) {
+        console.error('Error fetching admin reply notifications:', err);
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [user, router]);
+
   // Tracks active time spent (every 5 seconds)
   useEffect(() => {
     if (showSplash || showUsernamePrompt || checkingAuth) return;

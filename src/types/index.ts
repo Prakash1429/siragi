@@ -22,6 +22,7 @@ export interface User {
   totalQuotesRead?: number;
   readingHistory?: ReadingHistoryItem[];
   referrer?: string;
+  enableNotifications?: boolean;
 }
 
 export interface Poem {
