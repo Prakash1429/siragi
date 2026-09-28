@@ -1,5 +1,5 @@
 import { Poem, Category, Comment, CommentReply, Collection, AudioTrack, User, Report, ActivityLog, Achievement, Story, Like, VisitorLog, VisitorProfile, ReadingHistoryItem, Quote, Submission, UserQuery, Notification } from '@/types';
-import { mockCategories, mockQuotes, mockAchievements } from '@/lib/firebase/mockData';
+import { mockCategories, mockQuotes, mockAchievements, mockPoems, mockStories } from '@/lib/firebase/mockData';
 import { db, isFirebaseConfigured } from '@/lib/firebase/firebase';
 import { 
   collection, 
@@ -37,27 +37,57 @@ function cleanUndefined(obj: any): any {
 
 // Local storage persistent database helpers for local-mock mode
 const getPoems = (): Poem[] => {
-  if (!isClient) return [];
+  if (!isClient) return mockPoems || [];
   const stored = localStorage.getItem('siragii_poems');
-  return stored ? JSON.parse(stored) : [];
+  if (stored) {
+    try {
+      const list = JSON.parse(stored);
+      if (Array.isArray(list) && list.length > 0) return list;
+    } catch {}
+  }
+  if (mockPoems && mockPoems.length > 0) {
+    localStorage.setItem('siragii_poems', JSON.stringify(mockPoems));
+    return mockPoems;
+  }
+  return [];
 };
 const setPoems = (list: Poem[]) => {
   if (isClient) localStorage.setItem('siragii_poems', JSON.stringify(list));
 };
 
 const getStories = (): Story[] => {
-  if (!isClient) return [];
+  if (!isClient) return mockStories || [];
   const stored = localStorage.getItem('siragii_stories');
-  return stored ? JSON.parse(stored) : [];
+  if (stored) {
+    try {
+      const list = JSON.parse(stored);
+      if (Array.isArray(list) && list.length > 0) return list;
+    } catch {}
+  }
+  if (mockStories && mockStories.length > 0) {
+    localStorage.setItem('siragii_stories', JSON.stringify(mockStories));
+    return mockStories;
+  }
+  return [];
 };
 const setStories = (list: Story[]) => {
   if (isClient) localStorage.setItem('siragii_stories', JSON.stringify(list));
 };
 
 const getQuotes = (): Quote[] => {
-  if (!isClient) return [];
+  if (!isClient) return mockQuotes || [];
   const stored = localStorage.getItem('siragii_quotes');
-  return stored ? JSON.parse(stored) : [];
+  if (stored) {
+    try {
+      const list = JSON.parse(stored);
+      if (Array.isArray(list) && list.length > 0) return list;
+    } catch {}
+  }
+  if (mockQuotes && mockQuotes.length > 0) {
+    localStorage.setItem('siragii_quotes', JSON.stringify(mockQuotes));
+    return mockQuotes;
+  }
+  return [];
 };
 const setQuotes = (list: Quote[]) => {
   if (isClient) localStorage.setItem('siragii_quotes', JSON.stringify(list));
@@ -397,7 +427,8 @@ export const dbService = {
       try {
         const q = query(collection(db, 'poems'), where('status', '==', status), orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
-        return snap.docs.map(d => ({ ...d.data(), id: d.id } as Poem));
+        const list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Poem));
+        if (list.length > 0) return list;
       } catch (err) {
         console.error('Error fetching poems from Firestore (falling back to localStorage):', err);
       }
@@ -637,7 +668,8 @@ export const dbService = {
       try {
         const q = query(collection(db, 'stories'), where('status', '==', status), orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
-        return snap.docs.map(d => ({ ...d.data(), id: d.id } as Story));
+        const list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Story));
+        if (list.length > 0) return list;
       } catch (err) {
         console.error('Error fetching stories from Firestore (falling back to localStorage):', err);
       }
@@ -758,9 +790,10 @@ export const dbService = {
       try {
         const q = query(collection(db, 'quotes'), where('status', '==', status));
         const snap = await getDocs(q);
-        return snap.docs
+        const list = snap.docs
           .map(d => ({ ...d.data(), id: d.id } as Quote))
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        if (list.length > 0) return list;
       } catch (err) {
         console.error('Error fetching quotes from Firestore (falling back to localStorage):', err);
       }
