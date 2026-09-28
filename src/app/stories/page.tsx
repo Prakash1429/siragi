@@ -28,15 +28,12 @@ export default function PublicStoriesPage() {
     loadStories();
   }, []);
 
-  const genres = ['all', ...Array.from(new Set(stories.map(s => s.genre || s.category || 'General')))];
-
   const filtered = stories.filter(s => {
-    const matchesGenre = selectedGenre === 'all' || (s.genre || s.category || 'General').toLowerCase() === selectedGenre.toLowerCase();
     const matchesSearch = s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           s.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           s.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (s.tags && s.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
-    return matchesGenre && matchesSearch;
+    return matchesSearch;
   });
 
   return (
@@ -73,25 +70,7 @@ export default function PublicStoriesPage() {
         </div>
       </div>
 
-      {/* Genre filters */}
-      {genres.length > 1 && (
-        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1">
-          <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          {genres.map((g) => (
-            <button
-              key={g}
-              onClick={() => setSelectedGenre(g)}
-              className={`h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
-                selectedGenre.toLowerCase() === g.toLowerCase()
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20'
-                  : 'bg-secondary/20 text-muted-foreground border-border/40 hover:text-foreground hover:bg-secondary/40'
-              }`}
-            >
-              {g === 'all' ? 'All Genres' : g}
-            </button>
-          ))}
-        </div>
-      )}
+
 
       {loading ? (
         <LoadingSkeleton type="card" count={3} />

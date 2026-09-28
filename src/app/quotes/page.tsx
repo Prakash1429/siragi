@@ -111,15 +111,11 @@ export default function PublicQuotesPage() {
     }
   };
 
-  // Unique categories list
-  const categories = ['all', ...Array.from(new Set(quotes.map((q) => q.category || 'General')))];
-
   const filteredQuotes = quotes.filter((q) => {
     const matchesSearch =
       q.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.author.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || (q.category || 'General') === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   return (
@@ -153,24 +149,6 @@ export default function PublicQuotesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-10 pl-9 pr-4 rounded-xl bg-secondary/25 border border-border/50 text-xs focus:outline-none focus:border-primary text-foreground"
           />
-        </div>
-
-        {/* Category filters */}
-        <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-          <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0 hidden sm:inline" />
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
-                selectedCategory === cat
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20'
-                  : 'bg-secondary/20 text-muted-foreground border-border/40 hover:text-foreground hover:bg-secondary/40'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
       </div>
 

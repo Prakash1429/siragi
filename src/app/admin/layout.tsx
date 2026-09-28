@@ -104,7 +104,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Thoughts & Quotes', href: '/admin/quotes', icon: Quote },
     { name: 'Write Yours Verification', href: '/admin/write-yours', icon: Sparkles },
     { name: 'Support Queries', href: '/admin/queries', icon: HelpCircle },
-    { name: 'Categories', href: '/admin/categories', icon: Compass },
     { name: 'Comments', href: '/admin/comments', icon: MessageSquare },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/admin/settings', icon: SettingsIcon },
