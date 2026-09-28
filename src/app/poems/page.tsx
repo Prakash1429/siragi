@@ -39,12 +39,11 @@ export default function PublicPoemsPage() {
     const matchesLanguage = activeLanguage === 'all' ||
       (activeLanguage === 'ta' && (isTamil || p.language?.toLowerCase() === 'ta' || p.language?.toLowerCase() === 'tamil')) ||
       (activeLanguage === 'en' && !isTamil && (p.language?.toLowerCase() === 'en' || p.language?.toLowerCase() === 'english' || !p.language));
-    const matchesCategory = selectedCategory === 'all' || p.categorySlug === selectedCategory;
     const matchesSearch = (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.content || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.authorName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.tags && p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
-    return matchesLanguage && matchesCategory && matchesSearch;
+    return matchesLanguage && matchesSearch;
   });
 
   return (
@@ -98,35 +97,7 @@ export default function PublicPoemsPage() {
         </div>
       </div>
 
-      {/* Category filters */}
-      {categories.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto w-full pb-1">
-          <Filter className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
-              selectedCategory === 'all'
-                ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20'
-                : 'bg-secondary/20 text-muted-foreground border-border/40 hover:text-foreground hover:bg-secondary/40'
-            }`}
-          >
-            All Categories
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.slug}
-              onClick={() => setSelectedCategory(cat.slug)}
-              className={`h-8 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 transition-all border ${
-                selectedCategory === cat.slug
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-500/20'
-                  : 'bg-secondary/20 text-muted-foreground border-border/40 hover:text-foreground hover:bg-secondary/40'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
-        </div>
-      )}
+
 
       {loading ? (
         <LoadingSkeleton type="card" count={3} />
