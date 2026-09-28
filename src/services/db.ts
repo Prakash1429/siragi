@@ -42,7 +42,7 @@ const getPoems = (): Poem[] => {
   if (stored) {
     try {
       const list = JSON.parse(stored);
-      if (Array.isArray(list) && list.length > 0) return list;
+      if (Array.isArray(list) && list.length >= 5) return list;
     } catch {}
   }
   if (mockPoems && mockPoems.length > 0) {
@@ -61,7 +61,7 @@ const getStories = (): Story[] => {
   if (stored) {
     try {
       const list = JSON.parse(stored);
-      if (Array.isArray(list) && list.length > 0) return list;
+      if (Array.isArray(list) && list.length >= 3) return list;
     } catch {}
   }
   if (mockStories && mockStories.length > 0) {
@@ -80,7 +80,7 @@ const getQuotes = (): Quote[] => {
   if (stored) {
     try {
       const list = JSON.parse(stored);
-      if (Array.isArray(list) && list.length > 0) return list;
+      if (Array.isArray(list) && list.length >= 5) return list;
     } catch {}
   }
   if (mockQuotes && mockQuotes.length > 0) {
