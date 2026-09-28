@@ -37,7 +37,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: t('nav.stories'), href: '/stories', icon: BookOpen },
     { name: 'Thoughts & Quotes', href: '/quotes', icon: Quote },
     { name: 'Write Yours', href: '/write-yours', icon: PenSquare },
-    { name: t('nav.categories'), href: '/categories', icon: Compass },
     { name: t('nav.trending'), href: '/trending', icon: TrendingUp },
     { name: 'Queries', href: '/queries', icon: MessageSquare },
   ];

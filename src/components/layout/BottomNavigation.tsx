@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useStore } from '@/store/useStore';
-import { Home, Compass, PenSquare, User } from 'lucide-react';
+import { Home, Feather, PenSquare, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function BottomNavigation() {
@@ -14,7 +14,7 @@ export default function BottomNavigation() {
 
   const navItems = [
     { name: t('nav.home'), href: '/', icon: Home },
-    { name: t('nav.categories'), href: '/categories', icon: Compass },
+    { name: t('nav.poems'), href: '/poems', icon: Feather },
     { name: t('nav.write'), href: user?.role === 'admin' ? '/write' : '/write-yours', icon: PenSquare },
     { name: t('nav.profile'), href: user ? '/profile' : '/login', icon: User },
   ];

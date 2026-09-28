@@ -36,7 +36,7 @@ export default function Footer() {
             <h4 className="text-xs font-bold text-foreground uppercase tracking-widest mb-4">Platform</h4>
             <ul className="space-y-2.5 text-xs font-semibold text-muted-foreground">
               <li><Link href="/" className="hover:text-primary transition-all">Home</Link></li>
-              <li><Link href="/categories" className="hover:text-primary transition-all">Categories</Link></li>
+              <li><Link href="/poems" className="hover:text-primary transition-all">Poems</Link></li>
               <li><Link href="/trending" className="hover:text-primary transition-all">Trending Poems</Link></li>
               <li><Link href="/audio" className="hover:text-primary transition-all">Audio Recitations</Link></li>
             </ul>

@@ -216,23 +216,7 @@ export default function HomePage() {
         </section>
       ) : (
         <>
-          {/* 3. Poetry & Stories Categories */}
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-black text-foreground flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                Explore Categories
-              </h2>
-              <Link href="/categories" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
-                View All <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {categories.slice(0, 6).map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
-            </div>
-          </section>
+
 
           {/* Trending Poems */}
           {trendingPoems.length > 0 && (
