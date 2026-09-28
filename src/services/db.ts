@@ -425,15 +425,28 @@ export const dbService = {
   async getPoems(status: 'published' | 'pending' | 'draft' = 'published'): Promise<Poem[]> {
     if (isFirebaseConfigured && db) {
       try {
-        const q = query(collection(db, 'poems'), where('status', '==', status), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
+        const snap = await getDocs(collection(db, 'poems'));
         const list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Poem));
-        if (list.length > 0) return list;
+        if (list.length > 0) {
+          const filteredList = list.filter(p => {
+            if (status === 'published') {
+              return p.status === 'published' || p.isPublished === true || !p.status;
+            }
+            return p.status === status;
+          });
+          filteredList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+          if (filteredList.length > 0) return filteredList;
+        }
       } catch (err) {
         console.error('Error fetching poems from Firestore (falling back to localStorage):', err);
       }
     }
-    return getPoems().filter(p => p.status === status);
+    return getPoems().filter(p => {
+      if (status === 'published') {
+        return p.status === 'published' || p.isPublished === true || !p.status;
+      }
+      return p.status === status;
+    });
   },
 
   async getPoemById(id: string): Promise<Poem | null> {
@@ -666,15 +679,28 @@ export const dbService = {
   async getStories(status: 'published' | 'draft' = 'published'): Promise<Story[]> {
     if (isFirebaseConfigured && db) {
       try {
-        const q = query(collection(db, 'stories'), where('status', '==', status), orderBy('createdAt', 'desc'));
-        const snap = await getDocs(q);
+        const snap = await getDocs(collection(db, 'stories'));
         const list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Story));
-        if (list.length > 0) return list;
+        if (list.length > 0) {
+          const filteredList = list.filter(s => {
+            if (status === 'published') {
+              return s.status === 'published' || s.isPublished === true || !s.status;
+            }
+            return s.status === status;
+          });
+          filteredList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+          if (filteredList.length > 0) return filteredList;
+        }
       } catch (err) {
         console.error('Error fetching stories from Firestore (falling back to localStorage):', err);
       }
     }
-    return getStories().filter(s => s.status === status);
+    return getStories().filter(s => {
+      if (status === 'published') {
+        return s.status === 'published' || s.isPublished === true || !s.status;
+      }
+      return s.status === status;
+    });
   },
 
   async getStoryById(id: string): Promise<Story | null> {
@@ -788,17 +814,28 @@ export const dbService = {
   async getQuotes(status: 'published' | 'draft' = 'published'): Promise<Quote[]> {
     if (isFirebaseConfigured && db) {
       try {
-        const q = query(collection(db, 'quotes'), where('status', '==', status));
-        const snap = await getDocs(q);
-        const list = snap.docs
-          .map(d => ({ ...d.data(), id: d.id } as Quote))
-          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-        if (list.length > 0) return list;
+        const snap = await getDocs(collection(db, 'quotes'));
+        const list = snap.docs.map(d => ({ ...d.data(), id: d.id } as Quote));
+        if (list.length > 0) {
+          const filteredList = list.filter(q => {
+            if (status === 'published') {
+              return q.status === 'published' || !q.status;
+            }
+            return q.status === status;
+          });
+          filteredList.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+          if (filteredList.length > 0) return filteredList;
+        }
       } catch (err) {
         console.error('Error fetching quotes from Firestore (falling back to localStorage):', err);
       }
     }
-    return getQuotes().filter(q => q.status === status);
+    return getQuotes().filter(q => {
+      if (status === 'published') {
+        return q.status === 'published' || !q.status;
+      }
+      return q.status === status;
+    });
   },
 
   async getQuoteById(id: string): Promise<Quote | null> {
